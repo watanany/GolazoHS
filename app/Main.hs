@@ -1,4 +1,7 @@
-module Main where
+module Main
+    ( main
+    )
+where
 
 import           Data.List.Safe                 ( head )
 import           Parser                         ( document )

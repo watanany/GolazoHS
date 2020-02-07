@@ -10,6 +10,7 @@ import           Ast                            ( Annotation(..)
                                                 , Term(..)
                                                 )
 import           Control.Monad                  ( void )
+import           Data.Functor                   ( ($>) )
 import qualified Data.Set                      as Set
 import           Language                       ( lexer )
 import           ParserHelper                   ( many1Till
@@ -90,7 +91,7 @@ term = do
                 }
 
 expr :: Parsec String () Expr
-expr = (trace ":try-binop:" $! (try binop)) <|> (trace ":value:" $! value)
+expr = try binop <|> value
   where
     binop :: Parsec String () Expr
     binop = buildExpressionParser [[Infix impl AssocRight]] value
@@ -99,15 +100,15 @@ expr = (trace ":try-binop:" $! (try binop)) <|> (trace ":value:" $! value)
     impl = do
         skipSpaces
         op <-
-            trace ":op:"
-            $!  string "=>"
+            string "=>"
             <|> string "="
             <|> string "::"
             <|> string ">"
             <|> string "<"
             <|> string ">="
             <|> string "<="
-        pure $ trace ":BinOp:" $! BinOp (pack op)
+        skipSpaces
+        pure $ BinOp (pack op)
 
 value :: Parsec String () Expr
 value =
@@ -123,8 +124,8 @@ value =
     boolean :: Parsec String () Expr
     boolean = t <|> f
       where
-        t = symbol lexer "true" *> pure (VBool True)
-        f = symbol lexer "false" *> pure (VBool False)
+        t = symbol lexer "true" $> VBool True
+        f = symbol lexer "false" $> VBool False
 
     string :: Parsec String () Expr
     string = do
@@ -146,14 +147,14 @@ value =
     set :: Parsec String () Expr
     set = do
         xs <- braces lexer (commaSep lexer expr)
-        pure $ traceShowId $! VSet (Set.fromList xs)
+        pure $ VSet (Set.fromList xs)
 
     call :: Parsec String () Expr
     call = do
         name <- identifier lexer
         skipSpaces
         args <- many value
-        pure $ traceShowId $! Call (pack name) args
+        pure $ Call (pack name) args
 
     lambda :: Parsec String () Expr
     lambda = do
@@ -161,7 +162,7 @@ value =
         n <- identifier lexer
         symbol lexer "->" *> skipSpaces
         e <- expr
-        pure $ traceShowId $! Lambda (Symbol (pack n)) e
+        pure $ Lambda (Symbol (pack n)) e
 
 path :: Parsec String () Path
 path = do
@@ -188,23 +189,19 @@ path = do
 
 api :: Parsec String () Spec
 api = do
-    a     <- trace ":a:" $! optionMaybe (skipSpaces *> annotation)
-    m     <- trace ":m:" $! skipSpaces *> method
-    p     <- trace ":p:" $! skipSpaces *> path
-    query <-
-        trace ":query:" $! skipSpaces *> string "query" *> skipSpaces *> expr
-    pure $! traceShowId query
-    pre <- trace ":pre:" $! skipSpaces *> string "pre" *> skipSpaces *> expr
-    pure $! traceShowId pre
-    post <- trace ":post:" $! skipSpaces *> string "post" *> skipSpaces *> expr
-    pure $! traceShowId post
-    pure $! trace ":Api:" $ Api { apiAnnotation = a
-                                , apiMethod     = pack m
-                                , apiPath       = p
-                                , apiQuery      = query
-                                , apiPre        = pre
-                                , apiPost       = post
-                                }
+    a     <- optionMaybe (skipSpaces *> annotation)
+    m     <- skipSpaces *> method
+    p     <- skipSpaces *> path
+    query <- skipSpaces *> string "query" *> skipSpaces *> expr
+    pre   <- skipSpaces *> string "pre" *> skipSpaces *> expr
+    post  <- skipSpaces *> string "post" *> skipSpaces *> expr
+    pure Api { apiAnnotation = a
+             , apiMethod     = pack m
+             , apiPath       = p
+             , apiQuery      = query
+             , apiPre        = pre
+             , apiPost       = post
+             }
   where
     method =
         string "get" <|> string "post" <|> string "put" <|> string "delete"
