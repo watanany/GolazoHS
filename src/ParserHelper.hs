@@ -1,13 +1,13 @@
 module ParserHelper where
 
-import           RIO
 import           Control.Monad                  ( void )
+import           RIO
 import           Text.Parsec                    ( manyTill )
-import           Text.Parsec.Combinator         ( notFollowedBy )
-import           Text.Parsec.Prim               ( Stream
-                                                , ParsecT
-                                                )
 import           Text.Parsec.Char               ( satisfy )
+import           Text.Parsec.Combinator         ( notFollowedBy )
+import           Text.Parsec.Prim               ( ParsecT
+                                                , Stream
+                                                )
 
 -- |
 many1Till
