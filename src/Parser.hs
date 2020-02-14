@@ -12,21 +12,19 @@ import           Ast                            ( Annotation(..)
 import           Control.Monad                  ( void )
 import           Data.Functor                   ( ($>) )
 import qualified Data.Set                      as Set
+import           Data.Text                      ( pack
+                                                , strip
+                                                , unpack
+                                                )
 import           Language                       ( lexer )
 import           ParserHelper                   ( many1Till
                                                 , skipSpaces
-                                                )
-import           RIO                     hiding ( try
-                                                , (<|>)
-                                                )
-import           RIO.Text                       ( pack
-                                                , strip
-                                                , unpack
                                                 )
 import           Text.Parsec                    ( Parsec
                                                 , anyChar
                                                 , char
                                                 , eof
+                                                , many
                                                 , manyTill
                                                 , optionMaybe
                                                 , string

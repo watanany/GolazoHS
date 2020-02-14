@@ -1,7 +1,7 @@
 module Ast where
 
 import           Data.Set                       ( Set )
-import           RIO
+import           Data.Text                      ( Text )
 
 newtype Symbol = Symbol Text deriving (Show, Eq, Ord)
 

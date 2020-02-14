@@ -1,8 +1,9 @@
 module ParserHelper where
 
 import           Control.Monad                  ( void )
-import           RIO
-import           Text.Parsec                    ( manyTill )
+import           Text.Parsec                    ( many
+                                                , manyTill
+                                                )
 import           Text.Parsec.Char               ( satisfy )
 import           Text.Parsec.Combinator         ( notFollowedBy )
 import           Text.Parsec.Prim               ( ParsecT

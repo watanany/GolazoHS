@@ -21,10 +21,14 @@ description:         Please see the README on GitHub at <https://github.com/gith
 
 dependencies:
 - base >= 4.7 && < 5
-- rio
+- text
 - parsec
 - listsafe
 - containers
+
+default-extensions:
+- OverloadedStrings
+- ExplicitForAll
 
 library:
   source-dirs: src
@@ -35,9 +39,6 @@ library:
   - -Wincomplete-record-updates
   - -Wincomplete-uni-patterns
   - -Wpartial-fields
-  - -XNoImplicitPrelude
-  - -XOverloadedStrings
-  - -XExplicitForAll 
 
 executables:
   GolazoHS-exe:
@@ -53,9 +54,6 @@ executables:
     - -Wincomplete-record-updates
     - -Wincomplete-uni-patterns
     - -Wpartial-fields
-    - -XNoImplicitPrelude
-    - -XOverloadedStrings
-    - -XExplicitForAll 
     dependencies:
     - GolazoHS
 

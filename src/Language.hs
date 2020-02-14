@@ -1,12 +1,12 @@
-{-# LANGUAGE OverloadedStrings #-}
 module Language
     ( lexer
     )
 where
 
-import           RIO
-import           RIO.Char                       ( isAlpha )
-import           Text.Parsec                    ( oneOf )
+import           Data.Char                      ( isAlpha )
+import           Text.Parsec                    ( oneOf
+                                                , (<|>)
+                                                )
 import           Text.Parsec.Char               ( alphaNum
                                                 , satisfy
                                                 )
